@@ -2,6 +2,8 @@ import sqlite3
 
 from flask import Flask, render_template, request, jsonify
 
+from flask_cors import CORS
+
 
 def init_sqlite_db():
     conn = sqlite3.connect('database.db')
@@ -16,6 +18,7 @@ def init_sqlite_db():
 init_sqlite_db()
 
 app = Flask(__name__)
+CORS(app)
 
 
 @app.route('/')
@@ -60,7 +63,8 @@ def show_data():
     finally:
         con.close()
 
-    return render_template('records.html', data=data)
+    # return render_template('records.html', data=data)
+    return jsonify(data)
 
 
 @app.route('/delete-data/<int:data_id>/', methods=["GET"])
