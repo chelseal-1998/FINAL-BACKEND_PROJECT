@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Records</title>
+</head>
+<body>
+<h4>Data</h4>
+<table>
+    <th>ID</th>
+    <th>Header</th>
+    <th>Title</th>
+    <th>Description</th>
+    <th>Body</th>
+    {% for data in data %}
+    <tr>
+        <td>{{ data[0] }}</td>
+        <td>{{ data[1] }}</td>
+        <td>{{ data[2] }}</td>
+        <td>{{ data[3] }}</td>
+        <td>{{ data[4] }}</td>
+        <td><a href = "/delete-data/{{data[0]}}">Delete</a></td>
+
+    </tr>
+    {% endfor %}
+</table>
+<h5><a href = "/blog-form/">Blog form</a></h5>
+<h5><a href = "/show-data/">show data</a></h5>
+
+
+
+</body>
+</html>
