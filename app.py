@@ -73,8 +73,8 @@ def show_data():
     return jsonify(data)
 
 
-@app.route('/show-data/<int:data_id>/', methods=['GET'])
-def show_data(data_id):
+@app.route('/show-blog-item/<int:data_id>/', methods=['GET'])
+def show_blog_item(data_id):
     data = []
     try:
         with sqlite3.connect('database.db') as con:
@@ -84,10 +84,10 @@ def show_data(data_id):
             data = cur.fetchall()
     except Exception as e:
         con.rollback()
-        print("There was an error fetching results from the database.")
+        print("There was an error fetching results from the database: " + str(e))
     finally:
         con.close()
-    return jsonify(data)
+        return jsonify(data)
 
 
 @app.route('/delete-data/<int:data_id>/', methods=["GET"])
