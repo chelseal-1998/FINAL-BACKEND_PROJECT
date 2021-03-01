@@ -16,7 +16,7 @@ def init_sqlite_db():
     conn = sqlite3.connect('database.db')
     print("Opened database successfully")
     conn.execute('CREATE TABLE IF NOT EXISTS blogs (id INTEGER PRIMARY KEY AUTOINCREMENT ,header TEXT, title TEXT, '
-                 'description TEXT, body TEXT, image TEXT)')
+                 'description TEXT, body TEXT, image TEXT ,category TEXT)')
     print("Table created successfully")
 
     conn.close()
@@ -42,10 +42,13 @@ def add_new_record():
             title = request.form['title']
             description = request.form['description']
             body = request.form['body']
+            image = request.form['image']
+            category = request.form['category']
             with sqlite3.connect('database.db') as con:
                 cur = con.cursor()
-                cur.execute("INSERT INTO blogs (header, title, description, body, image) VALUES (?, ?, ?, ?, ?)",
-                            (header, title, description, body, image))
+                cur.execute("INSERT INTO blogs (header, title, description, body, image, category) VALUES (?, ?, ?, "
+                            "?,?,?)",
+                            (header, title, description, body, image, category))
                 con.commit()
                 msg = "Record successfully added."
         except Exception as e:
@@ -72,7 +75,7 @@ def show_data():
         con.close()
 
         #return render_template('records.html', data=data)
-    return jsonify(data)
+        return jsonify(data)
 
 
 @app.route('/show-blog-item/<int:data_id>/', methods=['GET'])
