@@ -5,11 +5,26 @@ from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 
 
-def dict_factory(cursor, row):
-    d = {}
-    for idx, col in enumerate(cursor.description):
-        d[col[0]] = row[idx]
-    return d
+def update_tables():
+    try:
+
+        conn = sqlite3.connect('database.db')
+        print("Opened database successfully")
+        conn.execute("UPDATE blogs SET video = 'https://youtube/embed/jN4dXenlxbI' WHERE id = 3")
+        print("Table updated successfully")
+
+        conn.close()
+    except Exception as e:
+        print(str(e))
+    finally:
+        pass
+
+
+#def dict_factory(cursor, row):
+ #   d = {}
+#    for idx, col in enumerate(cursor.description):
+ #       d[col[0]] = row[idx]
+  #  return d
 
 
 def init_sqlite_db():
@@ -23,6 +38,7 @@ def init_sqlite_db():
 
 
 init_sqlite_db()
+update_tables()
 
 app = Flask(__name__)
 CORS(app)
@@ -61,12 +77,39 @@ def add_new_record():
             return render_template('result.html', msg=msg)
 
 
+@app.route('/edit-data/<int:data_id>', methods=['PUT'])
+def update_record(data_id):
+    if request.method == "PUT":
+        try:
+            header = request.form['header']
+            title = request.form['title']
+            description = request.form['description']
+            body = request.form['body']
+            image = request.form['image']
+            category = request.form['category']
+            video = request.form['video']
+            with sqlite3.connect('database.db') as con:
+                cur = con.cursor()
+                cur.execute("UPDATE blogs (header, title, description, body, image, category, video) VALUES (?, "
+                            "?, ?, "
+                            "?,?,?,?) WHERE id=?",
+                            (header, title, description, body, image, category, video, data_id))
+                con.commit()
+                msg = "Record successfully updated."
+        except Exception as e:
+            con.rollback()
+            msg = "Error occurred in insert operation: " + e
+        finally:
+            con.close()
+            return render_template('result.html', msg=msg)
+
+
 @app.route('/show-data/', methods=['GET'])
 def show_data():
     data = []
     try:
         with sqlite3.connect('database.db') as con:
-            con.row_factory = dict_factory
+           # con.row_factory = dict_factory
             cur = con.cursor()
             cur.execute("SELECT * FROM blogs")
             data = cur.fetchall()
@@ -76,8 +119,8 @@ def show_data():
     finally:
         con.close()
 
-        # return render_template('records.html', data=data)
-        return jsonify(data)
+        return render_template('records.html', data=data)
+       # return jsonify(data)
 
 
 @app.route('/show-blog-item/<int:data_id>/', methods=['GET'])
