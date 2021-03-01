@@ -20,11 +20,11 @@ def update_tables():
         pass
 
 
-#def dict_factory(cursor, row):
- #   d = {}
-#    for idx, col in enumerate(cursor.description):
- #       d[col[0]] = row[idx]
-  #  return d
+def dict_factory(cursor, row):
+    d = {}
+    for idx, col in enumerate(cursor.description):
+        d[col[0]] = row[idx]
+    return d
 
 
 def init_sqlite_db():
@@ -109,7 +109,7 @@ def show_data():
     data = []
     try:
         with sqlite3.connect('database.db') as con:
-           # con.row_factory = dict_factory
+            con.row_factory = dict_factory
             cur = con.cursor()
             cur.execute("SELECT * FROM blogs")
             data = cur.fetchall()
@@ -119,8 +119,8 @@ def show_data():
     finally:
         con.close()
 
-        return render_template('records.html', data=data)
-       # return jsonify(data)
+        # return render_template('records.html', data=data)
+        return jsonify(data)
 
 
 @app.route('/show-blog-item/<int:data_id>/', methods=['GET'])
