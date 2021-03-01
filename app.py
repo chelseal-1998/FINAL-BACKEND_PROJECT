@@ -9,14 +9,14 @@ def dict_factory(cursor, row):
     d = {}
     for idx, col in enumerate(cursor.description):
         d[col[0]] = row[idx]
-        return d
+    return d
 
 
 def init_sqlite_db():
     conn = sqlite3.connect('database.db')
     print("Opened database successfully")
     conn.execute('CREATE TABLE IF NOT EXISTS blogs (id INTEGER PRIMARY KEY AUTOINCREMENT ,header TEXT, title TEXT, '
-                 'description TEXT, body TEXT, image TEXT ,category TEXT)')
+                 'description TEXT, body TEXT, image TEXT ,category TEXT, video TEXT)')
     print("Table created successfully")
 
     conn.close()
@@ -44,11 +44,13 @@ def add_new_record():
             body = request.form['body']
             image = request.form['image']
             category = request.form['category']
+            video = request.form['video']
             with sqlite3.connect('database.db') as con:
                 cur = con.cursor()
-                cur.execute("INSERT INTO blogs (header, title, description, body, image, category) VALUES (?, ?, ?, "
-                            "?,?,?)",
-                            (header, title, description, body, image, category))
+                cur.execute("INSERT INTO blogs (header, title, description, body, image, category, video) VALUES (?, "
+                            "?, ?, "
+                            "?,?,?,?)",
+                            (header, title, description, body, image, category, video))
                 con.commit()
                 msg = "Record successfully added."
         except Exception as e:
@@ -74,7 +76,7 @@ def show_data():
     finally:
         con.close()
 
-        #return render_template('records.html', data=data)
+        # return render_template('records.html', data=data)
         return jsonify(data)
 
 

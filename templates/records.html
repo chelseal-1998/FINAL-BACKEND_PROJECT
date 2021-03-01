@@ -14,6 +14,7 @@
     <th>Body</th>
     <th>Image</th>
     <th>Category</th>
+    <th>Video</th>
 
     {% for data in data %}
     <tr>
@@ -24,6 +25,7 @@
         <td>{{ data[4] }}</td>
         <td>{{ data[5] }}</td>
         <td>{{ data[6] }}</td>
+        <td>{{ data[7] }}</td>
         <td><a href = "/delete-data/{{data[0]}}">Delete</a></td>
 
     </tr>
