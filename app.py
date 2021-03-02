@@ -31,7 +31,11 @@ def init_sqlite_db():
     conn = sqlite3.connect('database.db')
     print("Opened database successfully")
     conn.execute('CREATE TABLE IF NOT EXISTS blogs (id INTEGER PRIMARY KEY AUTOINCREMENT ,header TEXT, title TEXT, '
-                 'description TEXT, body TEXT, image TEXT ,category TEXT, video TEXT)')
+                 'description TEXT, body1 TEXT, body2 TEXT, body3 TEXT, body4 TEXT, body5 TEXT ,image TEXT,'
+                 'category TEXT, video TEXT)')
+
+    conn.execute('CREATE TABLE IF NOT EXISTS subscribers (id INTEGER PRIMARY KEY AUTOINCREMENT ,username TEXT, '
+                 'email TEXT)')
     print("Table created successfully")
 
     conn.close()
@@ -57,16 +61,21 @@ def add_new_record():
             header = request.form['header']
             title = request.form['title']
             description = request.form['description']
-            body = request.form['body']
+            body1 = request.form['body1']
+            body2 = request.form['body2']
+            body3 = request.form['body3']
+            body4 = request.form['body4']
+            body5 = request.form['body5']
             image = request.form['image']
             category = request.form['category']
             video = request.form['video']
             with sqlite3.connect('database.db') as con:
                 cur = con.cursor()
-                cur.execute("INSERT INTO blogs (header, title, description, body, image, category, video) VALUES (?, "
+                cur.execute("INSERT INTO blogs (header, title, description, body1, body2,body3,body4,body5, image, "
+                            "category, video) VALUES (?, "
                             "?, ?, "
-                            "?,?,?,?)",
-                            (header, title, description, body, image, category, video))
+                            "?,?,?,?,?,?,?,?)",
+                            (header, title, description, body1, body2, body3, body4, body5, image, category, video))
                 con.commit()
                 msg = "Record successfully added."
         except Exception as e:
@@ -84,16 +93,21 @@ def update_record(data_id):
             header = request.form['header']
             title = request.form['title']
             description = request.form['description']
-            body = request.form['body']
+            body1 = request.form['body1']
+            body2 = request.form['body2']
+            body3 = request.form['body3']
+            body4 = request.form['body4']
+            body5 = request.form['body5']
             image = request.form['image']
             category = request.form['category']
             video = request.form['video']
             with sqlite3.connect('database.db') as con:
                 cur = con.cursor()
-                cur.execute("UPDATE blogs (header, title, description, body, image, category, video) VALUES (?, "
+                cur.execute("UPDATE blogs (header, title, description, body1,body2,body3,body4,body5, image, "
+                            "category, video) VALUES (?, "
                             "?, ?, "
-                            "?,?,?,?) WHERE id=?",
-                            (header, title, description, body, image, category, video, data_id))
+                            "?,?,?,?,?,?,?,?) WHERE id=?",
+                            (header, title, description, body1,body2,body3,body4,body5, image, category, video, data_id))
                 con.commit()
                 msg = "Record successfully updated."
         except Exception as e:
