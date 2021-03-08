@@ -69,17 +69,18 @@ def enter_data():
 def add_new_record():
     if request.method == "POST":
         try:
-            header = request.form['header']
-            title = request.form['title']
-            description = request.form['description']
-            body1 = request.form['body1']
-            body2 = request.form['body2']
-            body3 = request.form['body3']
-            body4 = request.form['body4']
-            body5 = request.form['body5']
-            image = request.form['image']
-            category = request.form['category']
-            video = request.form['video']
+            post_data = request.get_json()
+            header = post_data['header']
+            title = post_data['title']
+            description = post_data['description']
+            body1 = post_data['body1']
+            body2 = post_data['body2']
+            body3 = post_data['body3']
+            body4 = post_data['body4']
+            body5 = post_data['body5']
+            image = post_data['image']
+            category = post_data['category']
+            video = post_data['video']
             with sqlite3.connect('database.db') as con:
                 cur = con.cursor()
                 cur.execute("INSERT INTO blogs (header, title, description, body1, body2,body3,body4,body5, image, "
@@ -101,17 +102,18 @@ def add_new_record():
 def update_record(data_id):
     if request.method == "PUT":
         try:
-            header = request.form['header']
-            title = request.form['title']
-            description = request.form['description']
-            body1 = request.form['body1']
-            body2 = request.form['body2']
-            body3 = request.form['body3']
-            body4 = request.form['body4']
-            body5 = request.form['body5']
-            image = request.form['image']
-            category = request.form['category']
-            video = request.form['video']
+            post_data = request.get_json()
+            header = post_data['header']
+            title = post_data['title']
+            description = post_data['description']
+            body1 = post_data['body1']
+            body2 = post_data['body2']
+            body3 = post_data['body3']
+            body4 = post_data['body4']
+            body5 = post_data['body5']
+            image = post_data['image']
+            category = post_data['category']
+            video = post_data['video']
             with sqlite3.connect('database.db') as con:
                 cur = con.cursor()
                 cur.execute("UPDATE blogs (header, title, description, body1,body2,body3,body4,body5, image, "
