@@ -5,6 +5,10 @@ from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 
 
+app = Flask(__name__)
+CORS(app)
+
+
 def update_tables():
     try:
 
@@ -34,18 +38,25 @@ def init_sqlite_db():
                  'description TEXT, body1 TEXT, body2 TEXT, body3 TEXT, body4 TEXT, body5 TEXT ,image TEXT,'
                  'category TEXT, video TEXT)')
 
-    conn.execute('CREATE TABLE IF NOT EXISTS subscribers (id INTEGER PRIMARY KEY AUTOINCREMENT ,username TEXT, '
-                 'email TEXT)')
+    conn.execute('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT ,username TEXT,email TEXT, '
+                 'surname TEXT, contact TEXT)')
     print("Table created successfully")
 
+    # print(conn.execute("PRAGMA table_info('users')").fetchall())
+    # conn.execute("ALTER TABLE users ADD COLUMN contact TEXT")
+    print(conn.execute("SELECT * FROM users").fetchall())
+
+
     conn.close()
+
+
+
+
 
 
 init_sqlite_db()
 update_tables()
 
-app = Flask(__name__)
-CORS(app)
 
 
 @app.route('/')
@@ -107,7 +118,8 @@ def update_record(data_id):
                             "category, video) VALUES (?, "
                             "?, ?, "
                             "?,?,?,?,?,?,?,?) WHERE id=?",
-                            (header, title, description, body1,body2,body3,body4,body5, image, category, video, data_id))
+                            (header, title, description, body1, body2, body3, body4, body5, image, category, video,
+                             data_id))
                 con.commit()
                 msg = "Record successfully updated."
         except Exception as e:
@@ -169,6 +181,50 @@ def delete_data(data_id):
     finally:
         con.close()
     return render_template('delete-success.html', msg=msg)
+
+
+@app.route('/show-users/', methods=["GET"])
+def show_users():
+    try:
+        with sqlite3.connect('database.db') as con:
+            con.row_factory = dict_factory
+            cur = con.cursor()
+            cur.execute('SELECT * users')
+            data = cur.fetchall()
+            print("user added")
+
+    except Exception as e:
+        con.rollback()
+        print("There was an error fetching users:" + str(e))
+
+    finally:
+        con.close()
+    return jsonify(data)
+
+
+@app.route('/add-user/', methods=["POST"])
+def new_user():
+    if request.method == "POST":
+        msg = None
+        try:
+            data = request.get_json()
+            username = data['username']
+            surname = data['surname']
+            email = data['email']
+            contact = data['contact']
+
+            with sqlite3.connect('database.db') as con:
+                cur = con.cursor()
+                cur.execute("INSERT into users (username,email,surname,contact) VALUES (?,?,?,?)",
+                            (username, email, surname, contact))
+                con.commit()
+                msg = username + "was succcessfully added to the database."
+        except Exception as e:
+            con.rollback()
+            msg = "Error occurred:" + str(e)
+        finally:
+            con.close()
+            return jsonify(msg=msg)
 
 
 if __name__ == '__main__':
