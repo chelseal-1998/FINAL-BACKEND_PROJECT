@@ -4,24 +4,8 @@ from flask import Flask, render_template, request, jsonify
 
 from flask_cors import CORS
 
-
 app = Flask(__name__)
 CORS(app)
-
-
-def update_tables():
-    try:
-
-        conn = sqlite3.connect('database.db')
-        print("Opened database successfully")
-        conn.execute("UPDATE blogs SET video = 'https://youtube/embed/jN4dXenlxbI' WHERE id = 3")
-        print("Table updated successfully")
-
-        conn.close()
-    except Exception as e:
-        print(str(e))
-    finally:
-        pass
 
 
 def dict_factory(cursor, row):
@@ -46,17 +30,10 @@ def init_sqlite_db():
     # conn.execute("ALTER TABLE users ADD COLUMN contact TEXT")
     print(conn.execute("SELECT * FROM users").fetchall())
 
-
     conn.close()
 
 
-
-
-
-
 init_sqlite_db()
-update_tables()
-
 
 
 @app.route('/')
@@ -67,6 +44,8 @@ def enter_data():
 
 @app.route('/add-data/', methods=['POST'])
 def add_new_record():
+    global con
+    global msg
     if request.method == "POST":
         try:
             post_data = request.get_json()
@@ -81,21 +60,24 @@ def add_new_record():
             image = post_data['image']
             category = post_data['category']
             video = post_data['video']
-            with sqlite3.connect('database.db') as con:
-                cur = con.cursor()
-                cur.execute("INSERT INTO blogs (header, title, description, body1, body2,body3,body4,body5, image, "
-                            "category, video) VALUES (?, "
-                            "?, ?, "
-                            "?,?,?,?,?,?,?,?)",
-                            (header, title, description, body1, body2, body3, body4, body5, image, category, video))
-                con.commit()
-                msg = "Record successfully added."
+            con = sqlite3.connect('database.db')
+            con.row_factory = dict_factory
+            print(header, title, description)
+            cur = con.cursor()
+            cur.execute("INSERT INTO blogs (header, title, description, body1, body2,body3,body4,body5, image, "
+                        "category, video) VALUES (?, "
+                        "?, ?, "
+                        "?,?,?,?,?,?,?,?)",
+                        (header, title, description, body1, body2, body3, body4, body5, image, category, video))
+            con.commit()
+            msg = "Record successfully added."
         except Exception as e:
+            print("ERROR")
             con.rollback()
             msg = "Error occurred in insert operation: " + e
         finally:
             con.close()
-            return render_template('result.html', msg=msg)
+            return jsonify(msg=msg)  # render_template('result.html', msg=msg)
 
 
 @app.route('/edit-data/<int:data_id>', methods=['PUT'])
