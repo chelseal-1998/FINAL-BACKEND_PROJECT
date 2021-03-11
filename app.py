@@ -1,8 +1,8 @@
 import sqlite3
 
 from flask import Flask, render_template, request, jsonify
-
 from flask_cors import CORS
+
 
 app = Flask(__name__)
 CORS(app)
@@ -15,6 +15,7 @@ def dict_factory(cursor, row):
     return d
 
 
+# create a database and create tables
 def init_sqlite_db():
     conn = sqlite3.connect('database.db')
     print("Opened database successfully")
@@ -42,6 +43,7 @@ def enter_data():
     return render_template('blog-form.html')
 
 
+# function to add data into the database
 @app.route('/add-data/', methods=['POST'])
 def add_new_record():
     global con
@@ -74,7 +76,7 @@ def add_new_record():
         except Exception as e:
             print("ERROR")
             con.rollback()
-            msg = "Error occurred in insert operation: " + e
+            msg = "Error occurred in insert operation: " + str(e)
         finally:
             con.close()
             return jsonify(msg=msg)  # render_template('result.html', msg=msg)
@@ -114,6 +116,7 @@ def update_record(data_id):
             return render_template('result.html', msg=msg)
 
 
+# function to show data in json form
 @app.route('/show-data/', methods=['GET'])
 def show_data():
     data = []
@@ -133,6 +136,7 @@ def show_data():
         return jsonify(data)
 
 
+# function to add data seperatly using the data_id
 @app.route('/show-blog-item/<int:data_id>/', methods=['GET'])
 def show_blog_item(data_id):
     data = []
@@ -150,6 +154,7 @@ def show_blog_item(data_id):
         return jsonify(data)
 
 
+# function to delete data from database
 @app.route('/delete-data/<int:data_id>/', methods=["GET"])
 def delete_data(data_id):
     msg = None
@@ -186,6 +191,7 @@ def show_users():
     return jsonify(data)
 
 
+# add users to database
 @app.route('/add-user/', methods=["POST"])
 def new_user():
     if request.method == "POST":
