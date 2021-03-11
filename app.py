@@ -164,7 +164,7 @@ def delete_data(data_id):
         msg = "Error occurred when deleting a student in the database: " + str(e)
     finally:
         con.close()
-    return render_template('delete-success.html', msg=msg)
+    return jsonify(msg)
 
 
 @app.route('/show-users/', methods=["GET"])
